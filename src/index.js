@@ -1,31 +1,37 @@
-import retryingFetch from './retrying-fetch'
+import retryingFetch from "./retrying-fetch";
 
-let browserFetch = false
+let browserFetch = false;
 
 try {
-  browserFetch = window && window.fetch
+  browserFetch = window && window.fetch;
 } catch (error) {}
 
-function tenaciousFetch (url = '', config = {}) {
-  config = Object.assign({
-    retries: 1,
-    retryDelay: 1000,
-    retryStatus: [],
-    fetcher: browserFetch,
-    timeout: undefined
-  }, config)
+function tenaciousFetch(url = "", config = {}) {
+  config = Object.assign(
+    {
+      retries: 1,
+      retryDelay: 1000,
+      retryStatus: [],
+      fetcher: browserFetch,
+      timeout: undefined
+    },
+    config
+  );
 
-  if (!config.fetcher || typeof config.fetcher !== 'function') {
+  if (!config.fetcher || typeof config.fetcher !== "function") {
     throw new Error(
-      'tenacious-fetch: No fetch implementation found. Provide a valid fetch implementation via the fetcher configuration property.'
-    )
+      "tenacious-fetch: No fetch implementation found. Provide a valid fetch implementation via the fetcher configuration property."
+    );
   }
 
-  if (typeof config.retryStatus === 'string' || typeof config.retryStatus === 'number') {
-    config.retryStatus = [Number.parseInt(config.retryStatus)]
+  if (
+    typeof config.retryStatus === "string" ||
+    typeof config.retryStatus === "number"
+  ) {
+    config.retryStatus = [Number.parseInt(config.retryStatus)];
   }
 
-  const timeout = config.timeout
+  const timeout = config.timeout;
 
   if (timeout && Number.isInteger(timeout)) {
     return Promise.race([
@@ -35,16 +41,16 @@ function tenaciousFetch (url = '', config = {}) {
           () =>
             reject(
               new Error(
-                `tenacious-fetch: Request took longer than timeout of ${timeout} ms.`
+                `Anslutningen till servern misslyckades, kontrollera din internetanslutning`
               )
             ),
           timeout
         )
       )
-    ])
+    ]);
   }
 
-  return retryingFetch(config.retries, url, config)
+  return retryingFetch(config.retries, url, config);
 }
 
-export default tenaciousFetch
+export default tenaciousFetch;
